@@ -1,0 +1,39 @@
+<section *ngIf="loading" class="state-card"><span class="spinner-border spinner-border-sm"></span><span>Cargando resumen…</span></section>
+<section *ngIf="error" class="alert alert-danger soft-alert"><i class="ri-error-warning-line"></i>{{ error }}</section>
+<ng-container *ngIf="!loading && !error">
+  <div class="dashboard-intro"><div><p class="eyebrow">{{ today | date:'EEEE, d MMMM y' }}</p><h2>Un vistazo al negocio</h2></div><a class="button-primary compact-primary" routerLink="/sales/new"><i class="ri-add-line"></i> Nueva venta</a></div>
+
+  <section class="dashboard-kpis" aria-label="Indicadores principales">
+    <article class="dashboard-kpi"><div class="kpi-label"><span>Ventas</span><i class="ri-receipt-line"></i></div><strong>{{ sales.length | number }}</strong><small>Transacciones activas</small></article>
+    <article class="dashboard-kpi"><div class="kpi-label"><span>Ingresos</span><i class="ri-funds-line"></i></div><strong>{{ revenue | number:'1.2-2' }}</strong><small>Acumulado histórico</small></article>
+    <article class="dashboard-kpi"><div class="kpi-label"><span>Productos</span><i class="ri-box-3-line"></i></div><strong>{{ products.length | number }}</strong><small>En el catálogo</small></article>
+    <article class="dashboard-kpi"><div class="kpi-label"><span>Unidades vendidas</span><i class="ri-shopping-bag-3-line"></i></div><strong>{{ unitsSold | number }}</strong><small>En ventas activas</small></article>
+  </section>
+
+  <section class="dashboard-charts">
+    <article class="dashboard-panel sales-chart-panel">
+      <div class="section-head"><div><h3>Ventas recientes</h3><p>Importe de las últimas transacciones</p></div><a routerLink="/sales/history" class="subtle-link">Historial <i class="ri-arrow-right-line"></i></a></div>
+      <div *ngIf="chartSales.length" class="sales-chart"><div class="chart-gridlines"><i></i><i></i><i></i></div><div class="sales-chart-bars"><div class="sales-bar-column" *ngFor="let sale of chartSales"><span>{{ sale.total | number:'1.0-0' }}</span><div class="sales-bar" [style.height.%]="barHeight(sale)"></div><small>#{{ sale.id }}</small></div></div></div>
+      <div *ngIf="!chartSales.length" class="chart-empty">Las ventas aparecerán aquí cuando registres transacciones.</div>
+    </article>
+    <article class="dashboard-panel stock-chart-panel">
+      <div class="section-head"><div><h3>Estado del inventario</h3><p>Disponibilidad actual del catálogo</p></div><a routerLink="/products" class="subtle-link">Inventario <i class="ri-arrow-right-line"></i></a></div>
+      <div class="stock-stack" aria-label="Distribución del inventario"><span class="stock-segment healthy" [style.width.%]="stockPercent(products.length - lowStock - outOfStock)"></span><span class="stock-segment low" [style.width.%]="stockPercent(lowStock)"></span><span class="stock-segment empty" [style.width.%]="stockPercent(outOfStock)"></span></div>
+      <div class="stock-legend"><div><i class="legend-dot healthy"></i><span>Disponible</span><strong>{{ products.length - lowStock - outOfStock }}</strong></div><div><i class="legend-dot low"></i><span>Stock bajo</span><strong>{{ lowStock }}</strong></div><div><i class="legend-dot empty"></i><span>Agotado</span><strong>{{ outOfStock }}</strong></div></div>
+      <div *ngIf="missingImages" class="dashboard-image-note"><i class="ri-image-line"></i>{{ missingImages }} {{ missingImages === 1 ? 'producto sin imagen' : 'productos sin imagen' }}</div>
+    </article>
+  </section>
+
+  <section class="dashboard-bottom">
+    <article class="dashboard-panel featured-products">
+      <div class="section-head"><div><h3>Productos del catálogo</h3><p>Artículos disponibles en inventario</p></div><a routerLink="/products" class="subtle-link">Ver productos <i class="ri-arrow-right-line"></i></a></div>
+      <div *ngIf="dashboardProducts.length" class="dashboard-product-list"><div class="dashboard-product" *ngFor="let product of dashboardProducts"><app-product-image [image]="product.image" [alt]="product.name"></app-product-image><div class="dashboard-product-copy"><strong>{{ product.name }}</strong><small>{{ product.stock | number }} en stock</small></div><b>{{ product.price | number:'1.2-2' }}</b></div></div>
+      <div *ngIf="!dashboardProducts.length" class="lower-empty">No hay productos para mostrar.</div>
+    </article>
+    <article class="dashboard-panel transactions-panel">
+      <div class="section-head"><div><h3>Transacciones</h3><p>Actividad más reciente</p></div><a routerLink="/sales/history" class="subtle-link">Ver todas <i class="ri-arrow-right-line"></i></a></div>
+      <div *ngIf="recentSales.length" class="dashboard-transactions"><div class="transaction-row" *ngFor="let sale of recentSales"><span class="transaction-icon"><i class="ri-arrow-down-line"></i></span><div class="transaction-copy"><strong>Venta #{{ sale.id }}</strong><small>{{ sale.created_at || 'Fecha no disponible' }} · {{ unitsIn(sale) }} {{ unitsIn(sale) === 1 ? 'unidad' : 'unidades' }}</small></div><b>{{ sale.total | number:'1.2-2' }}</b></div></div>
+      <div *ngIf="!recentSales.length" class="lower-empty">Todavía no hay transacciones.</div>
+    </article>
+  </section>
+</ng-container>

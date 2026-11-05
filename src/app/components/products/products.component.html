@@ -1,0 +1,29 @@
+<section class="screen-heading">
+  <div><p class="eyebrow">INVENTARIO</p><h2>Productos</h2><p class="muted">Consulta artículos, precios y disponibilidad.</p></div>
+  <div class="heading-stat"><strong>{{ products.length }}</strong><span>productos</span></div>
+</section>
+
+<div *ngIf="error" class="alert alert-danger soft-alert"><i class="ri-error-warning-line"></i>{{ error }}</div>
+<div *ngIf="!loading && withoutImageCount" class="image-notice"><i class="ri-image-line"></i><span><strong>{{ withoutImageCount }} {{ withoutImageCount === 1 ? 'producto no tiene imagen' : 'productos no tienen imagen' }}.</strong> Se muestra un marcador visual en su lugar.</span></div>
+
+<section class="inventory-toolbar panel">
+  <label class="search-box"><i class="ri-search-line"></i><input type="search" [formControl]="search" placeholder="Buscar por nombre…" aria-label="Buscar por nombre"></label>
+  <div class="stock-filters" aria-label="Filtrar por estado de inventario">
+    <button type="button" [class.selected]="stockFilter === 'all'" (click)="stockFilter = 'all'">Todos <span>{{ products.length }}</span></button>
+    <button type="button" [class.selected]="stockFilter === 'available'" (click)="stockFilter = 'available'">Disponibles</button>
+    <button type="button" [class.selected]="stockFilter === 'low'" (click)="stockFilter = 'low'">Stock bajo</button>
+    <button type="button" [class.selected]="stockFilter === 'out'" (click)="stockFilter = 'out'">Agotados</button>
+  </div>
+</section>
+
+<div *ngIf="loading" class="state-card"><span class="spinner-border spinner-border-sm"></span><span>Cargando inventario…</span></div>
+<section *ngIf="!loading && !error && !filteredProducts.length" class="panel empty-state"><span class="empty-icon"><i class="ri-search-line"></i></span><strong>No encontramos productos</strong><span>Ajusta la búsqueda o el filtro de inventario.</span></section>
+
+<section class="inventory-grid" *ngIf="!loading">
+  <article class="inventory-card" app3dTilt *ngFor="let product of filteredProducts">
+    <app-product-image [image]="product.image" [alt]="product.name"></app-product-image>
+    <div class="inventory-info"><div class="inventory-name-row"><h3>{{ product.name }}</h3><span class="stock-status" [ngClass]="stockClass(product.stock)"><i></i>{{ stockLabel(product.stock) }}</span></div>
+      <div class="inventory-meta"><div><span>Precio</span><strong>{{ product.price | number:'1.2-2' }}</strong></div><div><span>Existencias</span><strong>{{ product.stock | number }}</strong></div></div>
+    </div>
+  </article>
+</section>

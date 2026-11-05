@@ -14,16 +14,11 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'budget-buddy-app'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('budget-buddy-app');
-  });
-
-  it('should render title', () => {
+  it('should render the application navigation and page title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('budget-buddy-app app is running!');
+    expect(compiled.querySelector('.brand')?.textContent).toContain('Mercatech');
+    expect(compiled.querySelector('.topbar h1')?.textContent).toContain('Resumen');
   });
 });

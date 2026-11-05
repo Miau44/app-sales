@@ -1,0 +1,36 @@
+<section class="screen-heading pos-heading">
+  <div><p class="eyebrow">PUNTO DE VENTA</p><h2>Nueva venta</h2><p class="muted">Selecciona productos y confirma la transacción.</p></div>
+  <a class="button-secondary" routerLink="/products"><i class="ri-archive-line"></i> Ver inventario</a>
+</section>
+
+<div *ngIf="notice" class="alert alert-success soft-alert"><i class="ri-checkbox-circle-line"></i>{{ notice }}</div>
+<div *ngIf="error" class="alert alert-danger soft-alert"><i class="ri-error-warning-line"></i>{{ error }}</div>
+
+<div class="pos-layout">
+  <section class="pos-catalog">
+    <div class="pos-toolbar panel"><div><h3>Catálogo</h3><p>{{ filteredProducts.length }} productos disponibles</p></div><label class="search-box"><i class="ri-search-line"></i><input type="search" [formControl]="search" placeholder="Buscar productos…" aria-label="Buscar productos para la venta"></label></div>
+    <div *ngIf="loading" class="state-card"><span class="spinner-border spinner-border-sm"></span><span>Cargando productos…</span></div>
+    <div *ngIf="!loading && !filteredProducts.length" class="panel empty-state"><span class="empty-icon"><i class="ri-search-line"></i></span><strong>Sin productos disponibles</strong><span>No hay productos que coincidan con la búsqueda.</span></div>
+    <div class="pos-product-grid" *ngIf="!loading">
+      <article class="pos-product" *ngFor="let product of filteredProducts" [class.product-unavailable]="product.stock < 1">
+        <app-product-image [image]="product.image" [alt]="product.name"></app-product-image>
+        <div class="pos-product-info"><div class="pos-product-title"><h4>{{ product.name }}</h4><span>{{ product.stock }} disp.</span></div><div class="pos-product-action"><strong>{{ product.price | number:'1.2-2' }}</strong><button type="button" (click)="add(product)" [disabled]="product.stock < 1" [attr.aria-label]="'Agregar ' + product.name"><i class="ri-add-line"></i></button></div></div>
+      </article>
+    </div>
+  </section>
+
+  <aside class="checkout-panel panel">
+    <div class="checkout-heading"><div class="checkout-icon"><i class="ri-shopping-basket-2-line"></i></div><div><h3>Venta actual</h3><p>{{ cart.count }} {{ cart.count === 1 ? 'unidad' : 'unidades' }}</p></div><button *ngIf="cartItems.length" type="button" class="clear-cart" (click)="cart.clear()">Vaciar</button></div>
+    <div *ngIf="!cartItems.length" class="checkout-empty"><span class="empty-icon"><i class="ri-handbag-line"></i></span><strong>Agrega productos</strong><span>Selecciona artículos del catálogo para iniciar la venta.</span></div>
+    <div class="checkout-items" *ngIf="cartItems.length">
+      <div class="checkout-item" *ngFor="let item of cartItems">
+        <div class="checkout-item-name"><strong>{{ item.product.name }}</strong><small>{{ item.product.price | number:'1.2-2' }} c/u</small></div>
+        <div class="quantity-controls"><button type="button" (click)="cart.setQuantity(item.product.id, item.quantity - 1)" aria-label="Reducir cantidad">−</button><span>{{ item.quantity }}</span><button type="button" (click)="cart.setQuantity(item.product.id, item.quantity + 1)" [disabled]="item.quantity >= item.product.stock" aria-label="Aumentar cantidad">+</button></div>
+        <strong class="checkout-line-total">{{ lineTotal(item.product.price, item.quantity) | number:'1.2-2' }}</strong>
+        <button type="button" class="remove-button" (click)="cart.remove(item.product.id)" aria-label="Quitar producto"><i class="ri-close-line"></i></button>
+      </div>
+    </div>
+    <div *ngIf="cart.hasStockIssues" class="stock-warning"><i class="ri-error-warning-line"></i> El inventario cambió. Ajusta las cantidades antes de confirmar.</div>
+    <div class="checkout-summary"><div><span>Total estimado</span><strong>{{ cart.total | number:'1.2-2' }}</strong></div><small>El precio se confirma desde el servidor al guardar.</small><button type="button" class="button-primary checkout-button" (click)="submitSale()" [disabled]="!cartItems.length || submitting || cart.hasStockIssues"><span *ngIf="submitting" class="spinner-border spinner-border-sm"></span><i *ngIf="!submitting" class="ri-check-line"></i>{{ submitting ? 'Procesando…' : 'Confirmar venta' }}</button></div>
+  </aside>
+</div>

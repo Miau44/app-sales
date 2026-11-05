@@ -1,0 +1,4 @@
+<div class="product-photo" [class.photo-fallback]="!source" role="img" [attr.aria-label]="alt">
+  <img *ngIf="source" [src]="source" [alt]="alt" loading="lazy" (error)="markFailed()">
+  <span *ngIf="!source" class="photo-placeholder" aria-hidden="true"><i class="ri-box-3-line"></i></span>
+</div>

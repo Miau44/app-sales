@@ -1,5 +1,19 @@
-<app-navbar></app-navbar>
-
-<div class="container">
-  <router-outlet></router-outlet>
+<div class="app-shell">
+  <div class="mobile-scrim" [class.visible]="isMenuOpen" (click)="closeMenu()" aria-hidden="true"></div>
+  <aside class="sidebar" [class.open]="isMenuOpen">
+    <a class="brand" routerLink="/dashboard" (click)="closeMenu()"><span class="brand-mark"><i class="ri-stack-line"></i></span><span>Mercatech<span class="brand-subtitle">SALES CONSOLE</span></span></a>
+    <div class="nav-label">Espacio de trabajo</div>
+    <nav class="side-nav" aria-label="Navegación principal">
+      <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" (click)="closeMenu()"><i class="ri-layout-grid-line"></i><span>Resumen</span></a>
+      <a routerLink="/products" routerLinkActive="active" (click)="closeMenu()"><i class="ri-box-3-line"></i><span>Productos</span></a>
+      <a routerLink="/sales/new" routerLinkActive="active" (click)="closeMenu()"><i class="ri-add-circle-line"></i><span>Nueva venta</span></a>
+      <a routerLink="/sales/history" routerLinkActive="active" (click)="closeMenu()"><i class="ri-file-list-3-line"></i><span>Historial</span></a>
+    </nav>
+    <div class="sidebar-bottom"><span class="status-dot"></span><span>Panel de ventas</span><span class="version-tag">v1.0</span></div>
+  </aside>
+  <div class="main-column">
+    <header class="topbar"><button class="mobile-menu" type="button" (click)="toggleMenu()" aria-label="Abrir navegación"><i class="ri-menu-line"></i></button><div><div class="topbar-eyebrow">MERCATECH / OPERACIONES</div><h1>{{ pageTitle }}</h1></div><a class="topbar-action" routerLink="/sales/new"><i class="ri-add-line"></i><span>Nueva venta</span></a></header>
+    <main class="page-content"><router-outlet></router-outlet></main>
+    <footer class="app-footer"><span>Mercatech Sales</span><span>Administración de ventas</span></footer>
+  </div>
 </div>
